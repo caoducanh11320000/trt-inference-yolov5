@@ -73,7 +73,7 @@ namespace IMXAIEngine
 
         trt_error init_inference(std::string engine_name ,const char * input_folder, std::vector<std::string> &file_names); 
         trt_error trt_APIModel  (int argc, char** argv);
-        trt_error trt_detection (std::vector<std::string> &file_names);
+        trt_error trt_detection (std::string img_dir , std::vector<std::string> &file_names);
 
     };
 

@@ -104,6 +104,12 @@ void prepare_buffers(ICudaEngine* engine, float** gpu_input_buffer, float** gpu_
   *cpu_output_buffer = new float[kBatchSize * kOutputSize];
 }
 
+void infer(IExecutionContext& context, cudaStream_t& stream, void** gpu_buffers, float* output, int batchsize) {
+  context.enqueue(batchsize, gpu_buffers, stream, nullptr);
+  CUDA_CHECK(cudaMemcpyAsync(output, gpu_buffers[1], batchsize * kOutputSize * sizeof(float), cudaMemcpyDeviceToHost, stream));
+  cudaStreamSynchronize(stream);
+}
+
 // Thay doi thong so truyen
 trt_error TRT_Inference::trt_APIModel(int argc, char** argv){
     
@@ -124,27 +130,27 @@ trt_error TRT_Inference::trt_APIModel(int argc, char** argv){
     return TRT_RESULT_SUCCESS;
 }
 
-int read_files_in_dir(const char *p_dir_name, std::vector<std::string> &file_names) { //luu cac tep trong thu muc vao mang, mang se chua duong dan toi cac thu muc
-    DIR *p_dir = opendir(p_dir_name);
-    if (p_dir == nullptr) {
-        return -1;
-    }
+// int read_files_in_dir(const char *p_dir_name, std::vector<std::string> &file_names) { //luu cac tep trong thu muc vao mang, mang se chua duong dan toi cac thu muc
+//     DIR *p_dir = opendir(p_dir_name);
+//     if (p_dir == nullptr) {
+//         return -1;
+//     }
 
-    struct dirent* p_file = nullptr;
-    while ((p_file = readdir(p_dir)) != nullptr) {
-        if (strcmp(p_file->d_name, ".") != 0 &&
-                strcmp(p_file->d_name, "..") != 0) {
-            //std::string cur_file_name(p_dir_name);
-            //cur_file_name += "/";
-            //cur_file_name += p_file->d_name;
-            std::string cur_file_name(p_file->d_name);
-            file_names.push_back(cur_file_name);
-        }
-    }
+//     struct dirent* p_file = nullptr;
+//     while ((p_file = readdir(p_dir)) != nullptr) {
+//         if (strcmp(p_file->d_name, ".") != 0 &&
+//                 strcmp(p_file->d_name, "..") != 0) {
+//             //std::string cur_file_name(p_dir_name);
+//             //cur_file_name += "/";
+//             //cur_file_name += p_file->d_name;
+//             std::string cur_file_name(p_file->d_name);
+//             file_names.push_back(cur_file_name);
+//         }
+//     }
 
-    closedir(p_dir);
-    return 0;
-}
+//     closedir(p_dir);
+//     return 0;
+// }
 
 // Giu nguyen Thong so
 trt_error TRT_Inference::init_inference(std::string engine_name , const char * input_folder, std::vector<std::string> &file_names){
@@ -165,12 +171,12 @@ trt_error TRT_Inference::init_inference(std::string engine_name , const char * i
 
     // Phan nay co the can sua thanh THis, neu ko chay duoc
 
-    *runtime = createInferRuntime(gLogger);
-    assert(*runtime);
-    *engine = (*runtime)->deserializeCudaEngine(serialized_engine, size);
-    assert(*engine);
-    *context = (*engine)->createExecutionContext();
-    assert(*context);
+    this->runtime = createInferRuntime(gLogger);
+    assert(runtime);
+    this->engine = (runtime)->deserializeCudaEngine(serialized_engine, size);
+    assert(engine);
+    this->context = (engine)->createExecutionContext();
+    assert(context);
     delete[] serialized_engine;
 
     // Luu ten anh vao vector
@@ -183,7 +189,7 @@ trt_error TRT_Inference::init_inference(std::string engine_name , const char * i
     CUDA_CHECK(cudaStreamCreate(&stream));
 
     // Init CUDA preprocessing
-    cuda_preprocess_init(kMaxInputImageSize)
+    cuda_preprocess_init(kMaxInputImageSize);
 
     prepare_buffers(engine, &gpu_buffers[0], &gpu_buffers[1], &cpu_output_buffer);
 
@@ -191,7 +197,7 @@ trt_error TRT_Inference::init_inference(std::string engine_name , const char * i
 }
 
 
-trt_error TRT_Inference::trt_detection(std::vector<std::string> &file_names ){
+trt_error TRT_Inference::trt_detection(std::string img_dir , std::vector<std::string> &file_names ){
 
     for (size_t i = 0; i < file_names.size(); i += kBatchSize) {
     // Get a batch of images
