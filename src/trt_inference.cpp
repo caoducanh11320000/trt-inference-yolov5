@@ -197,17 +197,19 @@ trt_error TRT_Inference::init_inference(std::string engine_name , const char * i
 }
 
 
-trt_error TRT_Inference::trt_detection(std::string img_dir , std::vector<std::string> &file_names ){
+trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_inputs, std::vector<IMXAIEngine::trt_output> &trt_outputs){
 
     for (size_t i = 0; i < file_names.size(); i += kBatchSize) {
     // Get a batch of images
     std::vector<cv::Mat> img_batch;  //// day va vector chua anh
-    std::vector<std::string> img_name_batch;
+    //std::vector<std::string> img_name_batch;
     for (size_t j = i; j < i + kBatchSize && j < file_names.size(); j++) {
-      cv::Mat img = cv::imread(img_dir + "/" + file_names[j]);
+      //cv::Mat img = cv::imread(img_dir + "/" + file_names[j]);
+      cv::Mat img = trt_inputs[j].input_img;
       img_batch.push_back(img);
-      img_name_batch.push_back(file_names[j]);
+      //img_name_batch.push_back(file_names[j]);
     }
+    /// CHi can thay dau vao img_batch thanh Input 
 
     // Preprocess
     cuda_batch_preprocess(img_batch, gpu_buffers[0], kInputW, kInputH, stream);
@@ -225,9 +227,34 @@ trt_error TRT_Inference::trt_detection(std::string img_dir , std::vector<std::st
     // Draw bounding boxes
     draw_bbox(img_batch, res_batch);
 
+    ///
+    for (size_t i = 0; i < img_batch.size(); i++) {
+      auto& res = res_batch[i];
+      //cv::Mat img = img_batch[i];
+      std::vector<trt_results> image_result;
+      IMXAIEngine::trt_output out_img;
+      for (size_t j = 0; j < res.size(); j++) {
+            trt_results boundingbox_result;
+            boundingbox_result.ClassID = res[j].class_id;
+            boundingbox_result.Confidence = res[j].det_confidence;
+            boundingbox_result.bbox[0] = res[j].bbox[0];
+            boundingbox_result.bbox[1] = res[j].bbox[1];
+            boundingbox_result.bbox[2] = res[j].bbox[2];
+            boundingbox_result.bbox[3] = res[j].bbox[3];
+
+            //image_result.push_back(boundingbox_result);
+            out_img.results.push_back(boundingbox_result);
+      }
+      // Thêm image_result vào results
+      out_img.id= j ; /// phan ID nay can xem lai, voi batch size=1 thi dung, con neu batchsize khac thi chua chac
+      trt_outputs.push_back(out_img);
+
+    }
+
+
     // Save images
     for (size_t j = 0; j < img_batch.size(); j++) {
-      cv::imwrite("_" + img_name_batch[j], img_batch[j]);
+      cv::imwrite("_" + j, img_batch[j]);  // May be duong dan can thay doi
     }
     
     }
