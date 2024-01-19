@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
             else std::cout << "That bai" << std::endl;
         }
 
+<<<<<<< HEAD
         for(int j =0; j<3; j++){
             std::cout <<"--------------------Thuc hien lan thu: " << j<<std::endl;
 
@@ -60,6 +61,10 @@ int main(int argc, char** argv) {
         }
         test1.trt_release();
 
+=======
+            test1.trt_detection(trt_inputs, trt_outputs);
+
+>>>>>>> 009365ce4e1edbda4cf10910d17e5f49184188d9
     }
     
 }

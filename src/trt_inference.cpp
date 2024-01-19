@@ -182,7 +182,11 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
     // Get a batch of images
     std::vector<cv::Mat> img_batch;  //// day va vector chua anh
     //std::vector<std::string> img_name_batch;
+<<<<<<< HEAD
     for (size_t j = i; j < i + kBatchSize && j < trt_inputs.size(); j++) {
+=======
+    for (size_t j = i; j < i + kBatchSize && j < file_names.size(); j++) {
+>>>>>>> 009365ce4e1edbda4cf10910d17e5f49184188d9
       //cv::Mat img = cv::imread(img_dir + "/" + file_names[j]);
       cv::Mat img = trt_inputs[j].input_img;
       img_batch.push_back(img);
@@ -207,15 +211,24 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
     draw_bbox(img_batch, res_batch);
 
     ///
+<<<<<<< HEAD
     for (size_t m = 0; m < img_batch.size(); m++) {
       auto& res = res_batch[m];
+=======
+    for (size_t i = 0; i < img_batch.size(); i++) {
+      auto& res = res_batch[i];
+>>>>>>> 009365ce4e1edbda4cf10910d17e5f49184188d9
       //cv::Mat img = img_batch[i];
       std::vector<trt_results> image_result;
       IMXAIEngine::trt_output out_img;
       for (size_t j = 0; j < res.size(); j++) {
             trt_results boundingbox_result;
             boundingbox_result.ClassID = res[j].class_id;
+<<<<<<< HEAD
             boundingbox_result.Confidence = res[j].conf;
+=======
+            boundingbox_result.Confidence = res[j].det_confidence;
+>>>>>>> 009365ce4e1edbda4cf10910d17e5f49184188d9
             boundingbox_result.bbox[0] = res[j].bbox[0];
             boundingbox_result.bbox[1] = res[j].bbox[1];
             boundingbox_result.bbox[2] = res[j].bbox[2];
@@ -225,7 +238,11 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
             out_img.results.push_back(boundingbox_result);
       }
       // Thêm image_result vào results
+<<<<<<< HEAD
       out_img.id= m+i ; /// phan ID nay can xem lai, voi batch size=1 thi dung, con neu batchsize khac thi chua chac
+=======
+      out_img.id= j ; /// phan ID nay can xem lai, voi batch size=1 thi dung, con neu batchsize khac thi chua chac
+>>>>>>> 009365ce4e1edbda4cf10910d17e5f49184188d9
       trt_outputs.push_back(out_img);
 
     }
@@ -234,7 +251,11 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
     // Save images
     std::string path = "../images/";
     for (size_t j = 0; j < img_batch.size(); j++) {
+<<<<<<< HEAD
       cv::imwrite(path + "___" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
+=======
+      cv::imwrite("_" + j, img_batch[j]);  // May be duong dan can thay doi
+>>>>>>> 009365ce4e1edbda4cf10910d17e5f49184188d9
     }
     
     }
