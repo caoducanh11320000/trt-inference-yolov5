@@ -130,27 +130,6 @@ trt_error TRT_Inference::trt_APIModel(int argc, char** argv){
     return TRT_RESULT_SUCCESS;
 }
 
-// int read_files_in_dir(const char *p_dir_name, std::vector<std::string> &file_names) { //luu cac tep trong thu muc vao mang, mang se chua duong dan toi cac thu muc
-//     DIR *p_dir = opendir(p_dir_name);
-//     if (p_dir == nullptr) {
-//         return -1;
-//     }
-
-//     struct dirent* p_file = nullptr;
-//     while ((p_file = readdir(p_dir)) != nullptr) {
-//         if (strcmp(p_file->d_name, ".") != 0 &&
-//                 strcmp(p_file->d_name, "..") != 0) {
-//             //std::string cur_file_name(p_dir_name);
-//             //cur_file_name += "/";
-//             //cur_file_name += p_file->d_name;
-//             std::string cur_file_name(p_file->d_name);
-//             file_names.push_back(cur_file_name);
-//         }
-//     }
-
-//     closedir(p_dir);
-//     return 0;
-// }
 
 // Giu nguyen Thong so
 trt_error TRT_Inference::init_inference(std::string engine_name , const char * input_folder, std::vector<std::string> &file_names){
@@ -197,17 +176,19 @@ trt_error TRT_Inference::init_inference(std::string engine_name , const char * i
 }
 
 
-trt_error TRT_Inference::trt_detection(std::string img_dir , std::vector<std::string> &file_names ){
+trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_inputs, std::vector<IMXAIEngine::trt_output> &trt_outputs){
 
-    for (size_t i = 0; i < file_names.size(); i += kBatchSize) {
+    for (size_t i = 0; i < trt_inputs.size(); i += kBatchSize) {
     // Get a batch of images
     std::vector<cv::Mat> img_batch;  //// day va vector chua anh
-    std::vector<std::string> img_name_batch;
-    for (size_t j = i; j < i + kBatchSize && j < file_names.size(); j++) {
-      cv::Mat img = cv::imread(img_dir + "/" + file_names[j]);
+    //std::vector<std::string> img_name_batch;
+    for (size_t j = i; j < i + kBatchSize && j < trt_inputs.size(); j++) {
+      //cv::Mat img = cv::imread(img_dir + "/" + file_names[j]);
+      cv::Mat img = trt_inputs[j].input_img;
       img_batch.push_back(img);
-      img_name_batch.push_back(file_names[j]);
+      //img_name_batch.push_back(file_names[j]);
     }
+    /// CHi can thay dau vao img_batch thanh Input 
 
     // Preprocess
     cuda_batch_preprocess(img_batch, gpu_buffers[0], kInputW, kInputH, stream);
@@ -225,14 +206,51 @@ trt_error TRT_Inference::trt_detection(std::string img_dir , std::vector<std::st
     // Draw bounding boxes
     draw_bbox(img_batch, res_batch);
 
+    ///
+    for (size_t m = 0; m < img_batch.size(); m++) {
+      auto& res = res_batch[m];
+      //cv::Mat img = img_batch[i];
+      std::vector<trt_results> image_result;
+      IMXAIEngine::trt_output out_img;
+      for (size_t j = 0; j < res.size(); j++) {
+            trt_results boundingbox_result;
+            boundingbox_result.ClassID = res[j].class_id;
+            boundingbox_result.Confidence = res[j].conf;
+            boundingbox_result.bbox[0] = res[j].bbox[0];
+            boundingbox_result.bbox[1] = res[j].bbox[1];
+            boundingbox_result.bbox[2] = res[j].bbox[2];
+            boundingbox_result.bbox[3] = res[j].bbox[3];
+
+            //image_result.push_back(boundingbox_result);
+            out_img.results.push_back(boundingbox_result);
+      }
+      // Thêm image_result vào results
+      out_img.id= m+i ; /// phan ID nay can xem lai, voi batch size=1 thi dung, con neu batchsize khac thi chua chac
+      trt_outputs.push_back(out_img);
+
+    }
+
+
     // Save images
+    std::string path = "../images/";
     for (size_t j = 0; j < img_batch.size(); j++) {
-      cv::imwrite("_" + img_name_batch[j], img_batch[j]);
+      cv::imwrite(path + "___" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
     }
     
     }
 
-      // Release stream and buffers
+    //   // Release stream and buffers
+    // cudaStreamDestroy(stream);
+    // CUDA_CHECK(cudaFree(gpu_buffers[0]));
+    // CUDA_CHECK(cudaFree(gpu_buffers[1]));
+    // delete[] cpu_output_buffer;
+    // cuda_preprocess_destroy();
+
+    return TRT_RESULT_SUCCESS;
+}
+
+trt_error TRT_Inference::trt_release(){
+    // Release stream and buffers
     cudaStreamDestroy(stream);
     CUDA_CHECK(cudaFree(gpu_buffers[0]));
     CUDA_CHECK(cudaFree(gpu_buffers[1]));
