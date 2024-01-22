@@ -20,10 +20,10 @@ git clone https://github.com/wang-xinyu/tensorrtx
 
 Step 6: copy .pt file from previous train into yolov5 directory
 
-Step 6: copy gen_wts.py from tensorrtx/yolov5 into yolov5 directory
+Step 7: copy gen_wts.py from tensorrtx/yolov5 into yolov5 directory
 cp tensorrtx/yolov5/gen_wts.py yolov5
 
-Step 7: Generate .wts file from .pt file, example:
+Step 8: Generate .wts file from .pt file, example:
 cd yolov5
 python3 gen_wts.py -w best.pt -o best.wts
 
