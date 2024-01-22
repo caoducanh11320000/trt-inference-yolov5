@@ -1,33 +1,3 @@
-# README #
-
-This README would normally document whatever steps are necessary to get your application up and running.
-
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
-
 Step 1: Install pip
 
 sudo apt update
@@ -59,13 +29,14 @@ python3 gen_wts.py -w best.pt -o best.wts
 
 Step 9: Clone the following repo:
 cd ~
-…. cho link repo cuar minh vao
+git clone git@github.com:caoducanh11320000/trt-inference-yolov5.git
 
 Step 10: Open config.h
-cd … ten repo/inclue 
+cd trt-inference-yolov5/include 
 vi config.h
 
-Step 11: Change kNumClass to number of class your model is trained. Exemple:
+Step 11: Change kNumClass to number of class your model is trained. 
+Exemple:
 kNumClass = 9;
 
 Step 12: Create build directory
