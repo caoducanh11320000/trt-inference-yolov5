@@ -1,4 +1,4 @@
-#*Step 1: Install pip*
+### Step 1: Install pip ###
 sudo apt update
 sudo apt install -y python3-pip
 pip3 install --upgrade pip
