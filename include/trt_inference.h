@@ -55,15 +55,18 @@ namespace IMXAIEngine
         ~TRT_Inference(){
             if (context != nullptr)
             {
-                context->destroy();
+                //context->destroy();
+                delete context;
             }
             if (engine != nullptr)
             {
-                engine->destroy();
+                //engine->destroy();
+                delete engine;
             }
             if (runtime != nullptr)
             {
-                runtime->destroy();
+                //runtime->destroy();
+                delete runtime;
             }
             printf("Da huy Inference \n");
         }

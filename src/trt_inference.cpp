@@ -7,6 +7,8 @@ using namespace nvinfer1;
 static Logger gLogger;
 const static int kOutputSize = kMaxNumOutputBbox * sizeof(Detection) / sizeof(float) + 1;
 
+const std::string names[2] = {"basketball", "players"};
+
 cudaStream_t stream;
   // Prepare cpu and gpu buffers
 float* gpu_buffers[2];
@@ -83,10 +85,11 @@ void serialize_engine(unsigned int max_batchsize, bool& is_p6, float& gd, float&
   p.write(reinterpret_cast<const char*>(serialized_engine->data()), serialized_engine->size());
 
   // Close everything down
-  engine->destroy();
-  config->destroy();
-  serialized_engine->destroy();
-  builder->destroy();
+
+  delete engine;
+  delete config;
+  delete serialized_engine;
+  delete builder;
 }
 
 void prepare_buffers(ICudaEngine* engine, float** gpu_input_buffer, float** gpu_output_buffer, float** cpu_output_buffer) {
@@ -236,11 +239,11 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
     }
 
 
-    // Save images
-    // std::string path = "../images/";
-    // for (size_t j = 0; j < img_batch.size(); j++) {
-    //   cv::imwrite(path + "___" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
-    // }
+    //Save images
+    std::string path = "../images/";
+    for (size_t j = 0; j < img_batch.size(); j++) {
+      cv::imwrite(path + "player_b4_" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
+    }
     
     }
 
