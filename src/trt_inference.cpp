@@ -180,8 +180,10 @@ trt_error TRT_Inference::init_inference(std::string engine_name , const char * i
 
 
 trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_inputs, std::vector<IMXAIEngine::trt_output> &trt_outputs){
+    auto start = std::chrono::system_clock::now();
     std::cout <<" Thuc hien do Inference" << std::endl;
     for (size_t i = 0; i < trt_inputs.size(); i += kBatchSize) {
+
     // Get a batch of images
     std::vector<cv::Mat> img_batch;  //// day va vector chua anh
 
@@ -198,10 +200,10 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
     cuda_batch_preprocess(img_batch, gpu_buffers[0], kInputW, kInputH, stream);
 
     // Run inference
-    auto start = std::chrono::system_clock::now();
+
     infer(*context, stream, (void**)gpu_buffers, cpu_output_buffer, kBatchSize);
-    auto end = std::chrono::system_clock::now();
-    std::cout << "inference time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
+    //auto end = std::chrono::system_clock::now();
+    //std::cout << "inference time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
 
     // NMS
     std::vector<std::vector<Detection>> res_batch;
@@ -240,12 +242,14 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
 
 
     //Save images
-    std::string path = "../images/";
-    for (size_t j = 0; j < img_batch.size(); j++) {
-      cv::imwrite(path + "player_b4_" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
-    }
+    // std::string path = "../images/";
+    // for (size_t j = 0; j < img_batch.size(); j++) {
+    //   cv::imwrite(path + "player_b4_" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
+    // }
     
     }
+    auto end = std::chrono::system_clock::now();
+    std::cout << "inference time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
 
     return TRT_RESULT_SUCCESS;
 }
