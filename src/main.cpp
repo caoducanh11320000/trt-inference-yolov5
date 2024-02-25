@@ -64,66 +64,6 @@ int main(int argc, char** argv) {
         return 1;
     }
     /// Input == Video
-    // else if(string(argv[1]) == "-d" && string(argv[2]) =="-v" ){
-    //     test1.init_inference(string(argv[3]), argv[4],  file_names);
-    //     std::cout <<"Dang thuc hien voi video" <<std::endl;
-    //     // chuyen video thanh anh
-    //     std::string video_path = std::string(argv[4]);
-    //     cv::VideoCapture cap(video_path);
-    //     if(!cap.isOpened()){
-    //         std::cout <<" Khong the mo video" <<std::endl;
-    //     }    
-    //     int id_img=0;
-    //     IMXAIEngine::trt_input trt_input;
-    //     cv::VideoWriter videoWriter(outputVideoPath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, imageSize);
-    //     cv::VideoWriter videoWriter2(outputVideoPath2, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, imageSize);
-
-    //     //Input vaf detect
-    //     while(true){
-    //         cv::Mat img;
-    //         cap >> img;
-    //         if(img.empty()){
-    //             std::cout<<"Het video" <<std::endl;
-    //             break;
-    //         }
-
-    //         trt_input.id_img= id_img;
-    //         trt_input.input_img= img;
-    //         trt_inputs.push_back(trt_input);
-
-    //         if((id_img+1) % 8 ==0){
-                
-    //             std::cout << "So luong dau vao: " << trt_inputs.size() << std::endl;
-    //             test1.trt_detection(trt_inputs, trt_outputs);
-    //             std::cout << "So luong dau ra: " << trt_outputs.size()<< std::endl;
-                
-    //             for(int j=0; j< 8; j++){
-    //                 cv::Mat img1 = trt_inputs[j].input_img;
-    //                 cv::resize(img1, img1, imageSize);
-    //                 if(id_img <1200){
-    //                     videoWriter.write(img1);
-    //                 }
-    //                 else{
-    //                     videoWriter2.write(img1);
-    //                 }
-    //             }
-    //             trt_inputs.clear();
-    //             std::vector< IMXAIEngine::trt_input> ().swap(trt_inputs) ;
-    //             trt_outputs.clear();
-    //             std::vector< IMXAIEngine::trt_output> ().swap(trt_outputs) ;
-    //         }
-    //         std::cout << "Thuc hien voi anh: " << id_img << std::endl;
-    //         id_img ++;
-    //     }
-    //     // Đóng video writer
-    //     videoWriter.release();
-    //     videoWriter2.release();
-    //     std::cout << "Video đã được tạo thành công." << std::endl;
-
-    //     test1.trt_release();
-    //     return 1;
-    // }
-
     else if(string(argv[1]) == "-d" && string(argv[2]) =="-v" ){
         test1.init_inference(string(argv[3]), argv[4],  file_names);
         std::cout <<"Dang thuc hien voi video" <<std::endl;
@@ -151,22 +91,22 @@ int main(int argc, char** argv) {
             trt_input.input_img= img;
             trt_inputs.push_back(trt_input);
 
-            if((id_img+1) % 32 ==0){
+            if((id_img+1) % 48 ==0){
                 
                 std::cout << "So luong dau vao: " << trt_inputs.size() << std::endl;
                 test1.trt_detection(trt_inputs, trt_outputs);
                 std::cout << "So luong dau ra: " << trt_outputs.size()<< std::endl;
                 
-                // for(int j=0; j< 8; j++){
-                //     cv::Mat img1 = trt_inputs[j].input_img;
-                //     cv::resize(img1, img1, imageSize);
-                //     if(id_img <1200){
-                //         videoWriter.write(img1);
-                //     }
-                //     else{
-                //         videoWriter2.write(img1);
-                //     }
-                // }
+                for(int j=0; j< 48; j++){
+                    cv::Mat img1 = trt_inputs[j].input_img;
+                    cv::resize(img1, img1, imageSize);
+                    if(id_img <1500){
+                        videoWriter.write(img1);
+                    }
+                    else{
+                        videoWriter2.write(img1);
+                    }
+                }
                 trt_inputs.clear();
                 std::vector< IMXAIEngine::trt_input> ().swap(trt_inputs) ;
                 trt_outputs.clear();
@@ -176,12 +116,72 @@ int main(int argc, char** argv) {
             id_img ++;
         }
         // Đóng video writer
-        // videoWriter.release();
-        // videoWriter2.release();
-        // std::cout << "Video đã được tạo thành công." << std::endl;
+        videoWriter.release();
+        videoWriter2.release();
+        std::cout << "Video đã được tạo thành công." << std::endl;
 
         test1.trt_release();
         return 1;
     }
+
+    // else if(string(argv[1]) == "-d" && string(argv[2]) =="-v" ){
+    //     test1.init_inference(string(argv[3]), argv[4],  file_names);
+    //     std::cout <<"Dang thuc hien voi video" <<std::endl;
+    //     // chuyen video thanh anh
+    //     std::string video_path = std::string(argv[4]);
+    //     cv::VideoCapture cap(video_path);
+    //     if(!cap.isOpened()){
+    //         std::cout <<" Khong the mo video" <<std::endl;
+    //     }    
+    //     int id_img=0;
+    //     IMXAIEngine::trt_input trt_input;
+    //     cv::VideoWriter videoWriter(outputVideoPath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, imageSize);
+    //     cv::VideoWriter videoWriter2(outputVideoPath2, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, imageSize);
+
+    //     //Input vaf detect
+    //     while(true){
+    //         cv::Mat img;
+    //         cap >> img;
+    //         if(img.empty()){
+    //             std::cout<<"Het video" <<std::endl;
+    //             break;
+    //         }
+
+    //         trt_input.id_img= id_img;
+    //         trt_input.input_img= img;
+    //         trt_inputs.push_back(trt_input);
+
+    //         if((id_img+1) % 32 ==0){
+                
+    //             std::cout << "So luong dau vao: " << trt_inputs.size() << std::endl;
+    //             test1.trt_detection(trt_inputs, trt_outputs);
+    //             std::cout << "So luong dau ra: " << trt_outputs.size()<< std::endl;
+                
+    //             // for(int j=0; j< 8; j++){
+    //             //     cv::Mat img1 = trt_inputs[j].input_img;
+    //             //     cv::resize(img1, img1, imageSize);
+    //             //     if(id_img <1200){
+    //             //         videoWriter.write(img1);
+    //             //     }
+    //             //     else{
+    //             //         videoWriter2.write(img1);
+    //             //     }
+    //             // }
+    //             trt_inputs.clear();
+    //             std::vector< IMXAIEngine::trt_input> ().swap(trt_inputs) ;
+    //             trt_outputs.clear();
+    //             std::vector< IMXAIEngine::trt_output> ().swap(trt_outputs) ;
+    //         }
+    //         std::cout << "Thuc hien voi anh: " << id_img << std::endl;
+    //         id_img ++;
+    //     }
+    //     // Đóng video writer
+    //     // videoWriter.release();
+    //     // videoWriter2.release();
+    //     // std::cout << "Video đã được tạo thành công." << std::endl;
+
+    //     test1.trt_release();
+    //     return 1;
+    // }
     
 }

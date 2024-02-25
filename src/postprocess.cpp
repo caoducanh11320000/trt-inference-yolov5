@@ -191,7 +191,7 @@
 #include "postprocess.h"
 #include "utils.h"
 
-const std::string names[2] = {"basketball", "players"};
+const std::string names[3] = {"bus", "car", "truck"};
 
 cv::Rect get_rect(cv::Mat& img, float bbox[4]) {
   float l, r, t, b;
@@ -282,7 +282,7 @@ void draw_bbox(std::vector<cv::Mat>& img_batch, std::vector<std::vector<Detectio
       std::string name = names[(int)res[j].class_id];
       float confidence = res[j].conf;
       // cv::putText(img, std::to_string((int)res[j].class_id), cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 2);
-      cv::putText(img, name +": "+ std::to_string(confidence), cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.2, cv::Scalar(0xFF, 0xFF, 0xFF), 1.7);
+      cv::putText(img, name +": "+ std::to_string(confidence), cv::Point(r.x, r.y - 1), cv::FONT_HERSHEY_PLAIN, 1.5, cv::Scalar(0xFF, 0xFF, 0xFF), 1.7);
     }
   }
 }
