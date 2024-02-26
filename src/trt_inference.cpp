@@ -240,10 +240,10 @@ trt_error TRT_Inference::trt_detection(std::vector<IMXAIEngine::trt_input> &trt_
 
 
     //Save images
-    std::string path = "../images/";
-    for (size_t j = 0; j < img_batch.size(); j++) {
-      cv::imwrite(path + "player_b4_" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
-    }
+   // std::string path = "../images/";
+   // for (size_t j = 0; j < img_batch.size(); j++) {
+   //   cv::imwrite(path + "player_b4_" + std::to_string(j + i) + ".png", img_batch[j]);  // May be duong dan can thay doi
+   // }
     
     }
 

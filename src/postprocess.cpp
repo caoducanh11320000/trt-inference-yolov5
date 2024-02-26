@@ -191,7 +191,7 @@
 #include "postprocess.h"
 #include "utils.h"
 
-const std::string names[2] = {"basketball", "players"};
+const std::string names[3] = {"bus", "car", "truck"};
 
 cv::Rect get_rect(cv::Mat& img, float bbox[4]) {
   float l, r, t, b;
